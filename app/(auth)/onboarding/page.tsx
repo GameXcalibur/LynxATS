@@ -46,7 +46,7 @@ export default async function Home() {
   return (   <main className="flex flex-row items-center justify-evenly w-full">
       <section className="w-1/2">
     <div className="">
-      <h1 className="font-bold text-4xl text-center mt-5">Seguidor</h1>
+      <h1 className="font-bold text-4xl text-center mt-5">LynxATS</h1>
       <h2 className="text-center mb-5">Kudos You Are Almost Done!</h2>
     </div>
     {/* <div>

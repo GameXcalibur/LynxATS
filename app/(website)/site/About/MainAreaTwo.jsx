@@ -7,7 +7,7 @@ const MainAreaTwo = () => {
       <div className="detailsTwo">
         <h2 className=" font-bold text-2xl">Our Philosophy:</h2>
         <p className="">
-          Seguidor was founded with a simple yet powerful goal: to
+          LynxATS was founded with a simple yet powerful goal: to
           simplify and improve HR
           <span className="block mt-1">
             Processes for organization of all sizes. Our journey began when a

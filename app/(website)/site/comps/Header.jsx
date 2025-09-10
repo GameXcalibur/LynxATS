@@ -29,7 +29,7 @@ const Header = () => {
         <Link href="/">
           <div className="text-white text-5xl">
             {/* <Image src={mainLogo} alt="Main-logo" className="semiLogo" width={50} height={50} /> */}
-            <span className="text-3xl font-[700]">Seguidor</span>
+            <span className="text-3xl font-[700]">LynxATS</span>
           </div>
         </Link>
         <nav className="flex items-center justify-center ml-6 space-x-4">

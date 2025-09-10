@@ -58,13 +58,13 @@ const Email = ({
       <Tailwind>
         <Body className='flex items-center justify-center bg-white my-12 mx-auto font-sans'>
           <Container className='p-8 rounded-lg shadow-lg'>
-            <Text className='text-3xl font-[800] text-blue-700'>Seguidor</Text>
+            <Text className='text-3xl font-[800] text-blue-700'>LynxATS</Text>
             <Heading className='text-xl pt-4'>Hello, {name}!</Heading>
             <Text className='text-lg font-medium text-gray-700'>
               Thanks for joining us in the application process for the role of {job}. 
               Unfortunately We cannot move further with your application please fill free to check other vacant positions by clicking the button below.
             </Text>
-            <Button className='bg-blue-800 text text-white font-bold px-2 py-4 rounded-md' href='https://seguidor-ats.vercel.app/site/joblisting'>
+            <Button className='bg-blue-800 text text-white font-bold px-2 py-4 rounded-md' href='https://LynxATS-ats.vercel.app/site/joblisting'>
               Check out other Vacancies
             </Button>
           </Container>

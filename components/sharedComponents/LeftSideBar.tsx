@@ -96,7 +96,7 @@ const LeftSidebar = () => {
   return (
     <aside className=" text-black p-4 space-y-4 min-h-screen flex flex-col items-center w-[201px]">
       <Link href={'/'}>
-      <div className="flex flex-col items-center text-3xl font-bold">Seguidor</div>
+      <div className="flex flex-col items-center text-3xl font-bold">LynxATS</div>
       </Link>
       {/* Button with Icon */} 
         <div className='sidebarUnderline w-full'></div>

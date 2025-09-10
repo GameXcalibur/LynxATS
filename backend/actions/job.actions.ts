@@ -573,7 +573,7 @@ interface InterviewProps {
 //             // ##############
 
 
-//             const res = await fetch('https://seguidor-ats.vercel.app/api/send', {
+//             const res = await fetch('https://LynxATS-ats.vercel.app/api/send', {
 //               method: 'POST',
 //               headers: {
 //                 'Content-Type': 'application/json',
