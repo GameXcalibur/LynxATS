@@ -49,9 +49,8 @@ import { NextResponse } from "next/server";
 import { fetchUser } from "./backend/actions/user.actions"; // Import functions for user actions
 
 export default authMiddleware({
-  // debug:true,
-  publicRoutes: ['/api/webhook/clerk',],
-  ignoredRoutes: ['/api/webhook/clerk'],
+  publicRoutes: ['/api/webhook/clerk', '/api/health', '/site(.*)'],
+  ignoredRoutes: ['/api/webhook/clerk', '/api/health'],
   // async afterAuth(auth, req, evt) {
   //   // handle users who aren't authenticated
   //   if (!auth.userId && !auth.isPublicRoute) {
