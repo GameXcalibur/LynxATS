@@ -12,11 +12,10 @@
  */
 
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";
 
-// Load .env from project root
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// Load .env from project root (using require to avoid type declaration issues)
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 
 // ── Models ──────────────────────────────────────────────────────────────────
 import User from "../backend/models/userModels/user.model";
