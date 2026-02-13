@@ -11,7 +11,7 @@ import Chapter from "../models/applicationsModel/applications.model";
 
 
 export async function fetchMessage(userId: string) {
-  connectToDB();
+  await connectToDB();
     try {
   
       return await User.findOne({ id: userId })
@@ -35,7 +35,7 @@ interface Params {
 }
 
 export async function sendMessage({content,sender,receiver,chapterId,anonymous}:Params):Promise<void>{
-    connectToDB();
+    await connectToDB();
 
     
     try {

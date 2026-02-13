@@ -51,7 +51,7 @@ export async function fetchUser(userId: string | undefined | null) {
   }
 
   
-  connectToDB(); // Ensure your database is connected
+  await connectToDB();
   try {
     const res = await User.findOne({ id:userId }).exec();
     
@@ -112,7 +112,7 @@ interface Params {
 }
 
 export async function updateUser({userId,username,name,bio,image,path,email,objectId}:Params):Promise<void>{
-    connectToDB();
+    await connectToDB();
 
     
     try {

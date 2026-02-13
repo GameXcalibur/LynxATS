@@ -119,7 +119,7 @@ export async function linkedInCreateJob() {
     portfolioworksample,
   }:CreateJobProp):Promise<void>{
 
-    connectToDB()
+    await connectToDB()
 
     try {
       // Find the job by their userId   
@@ -176,25 +176,30 @@ export async function linkedInCreateJob() {
 
   
 export async function getAllPostedJobs(){
-  connectToDB()
+  await connectToDB()
   try {
     // .populate("author")
-  const res = await Job.find({}).populate({
-    path: 'applications',
-    populate: {
-      path: 'noteAndFeedBack',
+  const res = await Job.find({})
+    .sort({ _id: -1 })
+    .limit(50)
+    .populate({
+      path: 'applications',
+      options: { limit: 100 },
       populate: {
-        path: 'sender receiver',
-        // model: 'User Applicant', // Replace with the actual model name for sender and receiver
+        path: 'noteAndFeedBack',
+        options: { limit: 50 },
+        populate: {
+          path: 'sender receiver',
+        },
       },
-    },
-  }).populate("author").exec();
-  const jobs = JSON.parse(JSON.stringify(res))
-  // console.log("jobs",jobs)
-  return jobs
+    })
+    .populate("author")
+    .lean()
+    .exec();
+  return JSON.parse(JSON.stringify(res))
 
 } catch (error:any) {
-  console.log(`there was an error finding all jobs ${error.message}`)
+  throw new Error(`Failed to fetch all jobs: ${error.message}`)
 }
 } 
 
@@ -229,7 +234,7 @@ export async function jobApplication({
   coverletter,
   yearsofexperience,
 }: Params): Promise<void> {
-  connectToDB();
+  await connectToDB();
 
   try {
     // console.log(coverletter);
@@ -285,7 +290,7 @@ export async function jobApplication({
 
 
 export async function fetchMessage(userId: string) {
-  connectToDB();
+  await connectToDB();
     try {
   
       return await User.findOne({ id: userId })
@@ -318,7 +323,7 @@ interface Params {
 }
 
 export async function sendComment({content,sender,receiver,applicantId}:Params):Promise<void>{
-  connectToDB();
+  await connectToDB();
 
   
   try {
@@ -366,8 +371,7 @@ interface ApplicantParams{
 
 
 export async function getSingleApplicant({ applicantId,jobId }: ApplicantParams) {
-  // console.log("a");
-  connectToDB();
+  await connectToDB();
 
   try {
     const res = await Application.findOne({ _id: applicantId }).populate({
@@ -410,13 +414,9 @@ export async function getSingleApplicant({ applicantId,jobId }: ApplicantParams)
 
 // function to get all applicants
 export async function getAllApplicantComment() {
-  connectToDB();
-      const a = await Application.find({})
+  await connectToDB();
   try {
-    const res = await Comment.find({}).populate('sender')
-    // .populate('receiver')
-    // .exec();
-    // console.log("Applicants", res);
+    const res = await Comment.find({}).sort({ _id: -1 }).limit(100).populate('sender').lean();
 
     if (!res) {
       console.log('Applicants not found');
@@ -434,13 +434,10 @@ export async function getAllApplicantComment() {
 
 
 export async function getAllApplicant() {
-  connectToDB();
+  await connectToDB();
       
   try {
-    const a = await Application.find({})
-    // .populate('receiver')
-    // .exec();
-    // console.log("Applicants", a);
+    const a = await Application.find({}).sort({ _id: -1 }).limit(200).lean();
 
     if (!a) {
       console.log('Applicants not found');
@@ -483,7 +480,7 @@ interface JobParams {
 
 
 export async function getSingleJob({jobId}:JobParams){
-  connectToDB()
+  await connectToDB()
   try {
     const res = await Job.findOne({ _id: jobId }).populate("author").populate('applications')
     const job = JSON.parse(JSON.stringify(res))
@@ -635,16 +632,14 @@ export async function scheduleInterview({
   applicantName,
   jobTitle
 }:InterviewProps){
-  
-
+    await connectToDB();
 
     const resend = new Resend(process.env.resendapikey);
     try {
 
-  
+
       const user = await User.findOne({ id: interviewer });
-      // const userr = JSON.parse(JSON.stringify(res))
-  
+
       const scheduledInterview = await Interview.create({
   interviewer:user?._id,
   applicant:applicant,
@@ -745,16 +740,14 @@ export async function RejectInterview({
   applicantName,
   jobTitle
 }:RejectInterviewProps){
-  
-
+    await connectToDB();
 
     const resend = new Resend(process.env.resendapikey);
     try {
 
-  
+
       const user = await User.findOne({ id: interviewer });
-      // const userr = JSON.parse(JSON.stringify(res))
-  
+
       const rejectedInterview = await RejectedInterview.create({
         applicant:applicant,
         job:job,
@@ -832,13 +825,9 @@ export async function RejectInterview({
 
 
 export async function getAllScheduledInterviews() {
-  connectToDB();
-      // const a = await Interview.find({})
+  await connectToDB();
   try {
-    const res = await Interview.find({}).populate('applicant').populate("interviewer").populate("job")
-    // .populate('receiver')
-    // .exec();
-    // console.log("Interviews", res);
+    const res = await Interview.find({}).sort({ _id: -1 }).limit(100).populate('applicant').populate("interviewer").populate("job").lean();
 
     if (!res) {
       console.log('Interviews not found');

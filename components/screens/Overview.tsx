@@ -61,7 +61,6 @@ const Overview =  () => {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
   const [allJobs, setAllJobs] =  React.useState<any>([])
-  const [noteAndFeedBack, setNoteAndFeedBack] =  React.useState<any>()
 
 
 
@@ -71,121 +70,47 @@ const Overview =  () => {
   const [totalComment,setTotalComment] = useState<any>()
   const [tasks,setTasks] = useState<any>()
   const [tasklength,setTaskLength] = useState<any>()
-  const [job,setJob] = useState<any>()
-  // console.log("me",params?.jobId)
+  const [loading,setLoading] = useState(true)
 
   useEffect(()=>{
-// console.log("firing")
-const fetchData = async () => {
-  try {
-    // const jobId = params?.id;
-    const res = await getAllApplicantComment();
-    
-    // const res2 = await getSingleJob({ jobId:params?.jobId });
-    // setJob(res2)
-    setAllApplicant(allApplicant);
-    // console.log("applicant", applicant);
-    return res
-  } catch (error) {
-    console.error("Error fetching all applicant:", error);
-  }
-};
+    let cancelled = false;
 
-fetchData().then((a)=>{
-    setAllApplicant(a)
-    
-    
-  });
-  },[])
+    const fetchAllData = async () => {
+      try {
+        const [applicantComments, scheduledInterviews, jobs] = await Promise.all([
+          getAllApplicantComment().catch(() => []),
+          getAllScheduledInterviews().catch(() => []),
+          getAllPostedJobs().catch(() => []),
+        ]);
 
+        if (cancelled) return;
 
+        setAllApplicant(applicantComments);
 
-  useEffect(()=>{
-    const me = async ()=>{
+        setTasks(scheduledInterviews || []);
+        setTaskLength(scheduledInterviews?.length || 0);
 
-      const scheduledInterviews = await getAllScheduledInterviews()
-      setTasks(scheduledInterviews)
-      const tasklen = scheduledInterviews.length
-      setTaskLength(tasklen)
-     console.log(scheduledInterviews)
-    }
-    me()
+        const jobsData = jobs || [];
+        setAllJobs(jobsData);
 
-
-      },[])
-
-
-
-
-
-
-
-  useEffect(()=>{
-    const me = async ()=>{
-
-      const allJobs = await getAllPostedJobs()
-      setAllJobs(allJobs)
-     console.log(allJobs)
-     {const noteandfeedback = allJobs &&
-      allJobs?.slice(0,2).reverse().map((job:any) => {
-        return (
-          job?.applications?.slice().reverse().map((applications:any) =>{
-            return (
-              applications?.noteAndFeedBack?.slice().reverse().map((noteAndFeedBack:any) => {
-                return (
-                  <div className='flex items-start justify-start gap-[6px] my-2'>
-                    <div>
-                      <img className='h-[30px] w-[30px] rounded-full' alt='profile-img' src='https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600'/>
-                    </div>
-                    <div className='flex flex-col w-full'>
-                      <div className='text-[14px] text-left font-[400]'>{noteAndFeedBack?.sender?.name}</div>
-                      <div className='text-[12px] font-[400] text-left'>{noteAndFeedBack?.sender?.email}usoroandidiong@gmail.com</div>
-                      <div className='messageBackground p-1 text-[14px] font-[400] my-2'>{noteAndFeedBack?.content}</div>
-                      <div className=''>
-                      <Link href={`jobs/${job?._id}/candidates/information/${applications?._id}`}><span className='text-blue-800'>@{noteAndFeedBack?.receiver?.name}</span></Link>
-                      </div>
-                      {/* <form>
-                        <input type='text' placeholder='write here...' className='messageBackground rounded-[4px] h-[40px] w-full'/>
-                      </form>
-                      <div className='w-full flex justify-end items-end '>
-                        <div className='sendButton flex items-end text-[14px] font-[400]'>Send</div>
-                      </div> */}
-                    </div>
-                  </div>
-                )
-              })
-            )
-          })
-        )
-      })
-      setNoteAndFeedBack(noteandfeedback)
-      }
-
-
-      const totalComments = allJobs.reduce((accJobs:any, job:any) => {
-        const jobComments = job?.applications?.reduce((accApplications:any, application:any) => {
-          return accApplications + application?.noteAndFeedBack?.length;
+        const totalComments = jobsData.reduce((accJobs:any, job:any) => {
+          const jobComments = job?.applications?.reduce((accApplications:any, application:any) => {
+            return accApplications + (application?.noteAndFeedBack?.length || 0);
+          }, 0);
+          return accJobs + (jobComments || 0);
         }, 0);
-        return accJobs + jobComments;
-      }, 0);
-  
-      setTotalComment(totalComments)
+        setTotalComment(totalComments);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
+    fetchAllData();
 
-      
-    }
-    me()
-
-    // let totalNoteAndFeedBack = allJobs.reduce((acc:any, job:any) => {
-    //   return acc + job.applications.reduce((accApp:any, application:any) => {
-    //     return accApp + application.noteAndFeedBack.length;
-    //   }, 0);
-    // }, 0);
-
-    // setTotalComment(totalNoteAndFeedBack)
-    
-
-      },[])
+    return () => { cancelled = true; };
+  },[])
 
 
 
@@ -350,7 +275,7 @@ fetchData().then((a)=>{
                     </div>
                   </header>
                   <div onClick={handleSeeAllClick} className='jobRoleBackground flex flex-col justify-center gap-4 p-2'>
-                    {allJobs?.reverse().slice(0,3).map( (item:any)=>{
+                    {allJobs?.slice(0,3).map( (item:any)=>{
                       return (
                         <JobRoleCard 
                         key = {item?._id}
@@ -390,7 +315,7 @@ fetchData().then((a)=>{
                   </div>
 
                 </div> 
-                {tasks?.reverse().slice(0,2).map((task:any)=>{
+                {tasks?.slice(0,2).map((task:any)=>{
                   return (
                     <DailyTaskCard 
                     applicantImg={task?.applicant?.passport}
@@ -425,8 +350,26 @@ fetchData().then((a)=>{
 
                   </div> 
 
-                  <div className='flex flex-col gap-2'> 
-                    {noteAndFeedBack}   
+                  <div className='flex flex-col gap-2'>
+                    {allJobs?.slice(0,2).map((job:any) =>
+                      job?.applications?.slice().reverse().map((applications:any) =>
+                        applications?.noteAndFeedBack?.slice().reverse().map((nf:any, idx:number) => (
+                          <div key={`${applications?._id}-${idx}`} className='flex items-start justify-start gap-[6px] my-2'>
+                            <div>
+                              <img className='h-[30px] w-[30px] rounded-full' alt='profile-img' src='https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600'/>
+                            </div>
+                            <div className='flex flex-col w-full'>
+                              <div className='text-[14px] text-left font-[400]'>{nf?.sender?.name}</div>
+                              <div className='text-[12px] font-[400] text-left'>{nf?.sender?.email}</div>
+                              <div className='messageBackground p-1 text-[14px] font-[400] my-2'>{nf?.content}</div>
+                              <div>
+                                <Link href={`jobs/${job?._id}/candidates/information/${applications?._id}`}><span className='text-blue-800'>@{nf?.receiver?.name}</span></Link>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )
+                    )}
                   </div>
               </section>
 
