@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "email": "email dev --dir app/emails",
-    "seed": "node -e \"require('ts-node').register({compilerOptions:{module:'commonjs'},transpileOnly:true}); require('./scripts/seed.ts')\""
+    "seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.27.2",
